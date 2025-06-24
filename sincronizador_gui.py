@@ -9,11 +9,11 @@ from tkinter import messagebox, filedialog, scrolledtext
 
 PASTAS_MAPEADAS = {
     "Projeto 1": (
-        Path(r"C:\Origem\Projeto1"),  # Caminho de origem
-        Path(r"D:\Backup\Projeto1")   # Caminho de destino
+        Path(r"C:\Caminho\Origem\Projeto1"),  # Caminho de origem genérico
+        Path(r"D:\Backup\Projeto1")            # Caminho de destino genérico
     ),
     "Projeto 2": (
-        Path(r"C:\Origem\Projeto2"),
+        Path(r"C:\Caminho\Origem\Projeto2"),
         Path(r"D:\Backup\Projeto2")
     ),
     # Adicione mais pares conforme necessário
@@ -67,12 +67,13 @@ class AppSync:
 
         # Percorre todos os arquivos e subpastas
         for root, dirs, files in os.walk(origem):
-            # Ignora a pasta ".obsidian" (e seu conteúdo)
-            dirs[:] = [d for d in dirs if d != ".obsidian"]
+            # Ignora diretórios ocultos (que começam com '.')
+            dirs[:] = [d for d in dirs if not d.startswith(".")]
 
             for file in files:
-                if ".obsidian" in Path(root).parts:
-                    continue  # Ignora arquivos dentro de ".obsidian"
+                # Ignora arquivos dentro de pastas ocultas
+                if any(part.startswith(".") for part in Path(root).parts):
+                    continue
 
                 caminho_origem = Path(root) / file
                 caminho_relativo = caminho_origem.relative_to(origem)
